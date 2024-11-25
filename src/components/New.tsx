@@ -260,12 +260,4 @@ const Editor = () => {
   );
 };
 
-const Renderer = () => {
-  return;
-};
-
-const New = () => {
-  return <Editor />;
-};
-
-export default New;
+export default Editor;

@@ -5,7 +5,10 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const json = await request.json();
 
-    const { status, data = [{}] } = await createApology(json.data, json.img);
+    const { status, data = [{ id: undefined }] } = await createApology(
+      json.data,
+      json.img
+    );
 
     const id = data?.[0]?.id;
 
