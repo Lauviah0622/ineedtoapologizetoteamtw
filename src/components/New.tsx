@@ -248,7 +248,6 @@ const Editor = () => {
                   headers,
                 });
                 const id = await response.text();
-                setIsLoading(false);
 
                 window.location.href = '/from/' + id;
               } catch {
