@@ -1,0 +1,25 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getApology } from '@/db';
+
+const { id } = Astro.params;
+
+const response = await getApology(id as string);
+
+if (response.status >= 400 || response.error) {
+  return Astro.redirect('/404');
+}
+
+const { data, img } = response.data?.[0];
+const { apologist } = data;
+---
+
+<Layout title={`來自${apologist}的道歉：`}>
+  <img src={img} alt="apology" />
+</Layout>
+
+<style>
+  img {
+    height: 100%;
+  }
+</style>
