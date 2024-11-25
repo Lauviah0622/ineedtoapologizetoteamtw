@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { getApology } from '@/db';
+import '@/form.css';
 
 const { id } = Astro.params;
 
@@ -16,6 +17,9 @@ const { apologist } = data;
 
 <Layout title={`來自${apologist}的道歉：`}>
   <img src={img} alt="apology" />
+  <div class="submit">
+    <button onclick="location.href = '/'">再填一張</button>
+  </div>
 </Layout>
 
 <style>
