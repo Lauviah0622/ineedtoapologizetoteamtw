@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from 'react';
 import { type Apology, createDefaultApology } from '@/utils/apology';
-import { toBlob } from 'html-to-image';
+import { toJpeg } from 'html-to-image';
 
 type Reason = Apology['reasons'][number];
 
@@ -220,31 +220,14 @@ const Editor = () => {
                 if (!ref.current) {
                   return;
                 }
-                const blob = await toBlob(ref.current);
-                if (!blob) return;
-  
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-  
-                const base64Image = await new Promise<string>(
-                  (resolve, reject) => {
-                    reader.addEventListener('load', () => {
-                      const result = reader.result;
-                      if (typeof result !== 'string') {
-                        reject();
-                        return;
-                      }
-                      resolve(result);
-                    });
-                  }
-                );
-  
+                const base64Img = await toJpeg(ref.current, { quality: 0.5 });
+
                 const headers = new Headers();
                 headers.append('Content-Type', 'text/json');
   
                 const response = await fetch('/new', {
                   method: 'POST',
-                  body: JSON.stringify({ img: base64Image, data }),
+                  body: JSON.stringify({ img: base64Img, data }),
                   headers,
                 });
                 const id = await response.text();
