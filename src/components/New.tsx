@@ -215,41 +215,46 @@ const Editor = () => {
           <button
             disabled={isLoading}
             onClick={async () => {
-              setIsLoading(true)
-              if (!ref.current) {
-                return;
-              }
-              const blob = await toBlob(ref.current);
-              if (!blob) return;
-
-              const reader = new FileReader();
-              reader.readAsDataURL(blob);
-
-              const base64Image = await new Promise<string>(
-                (resolve, reject) => {
-                  reader.addEventListener('load', () => {
-                    const result = reader.result;
-                    if (typeof result !== 'string') {
-                      reject();
-                      return;
-                    }
-                    resolve(result);
-                  });
+              try {
+                setIsLoading(true)
+                if (!ref.current) {
+                  return;
                 }
-              );
+                const blob = await toBlob(ref.current);
+                if (!blob) return;
+  
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+  
+                const base64Image = await new Promise<string>(
+                  (resolve, reject) => {
+                    reader.addEventListener('load', () => {
+                      const result = reader.result;
+                      if (typeof result !== 'string') {
+                        reject();
+                        return;
+                      }
+                      resolve(result);
+                    });
+                  }
+                );
+  
+                const headers = new Headers();
+                headers.append('Content-Type', 'text/json');
+  
+                const response = await fetch('/new', {
+                  method: 'POST',
+                  body: JSON.stringify({ img: base64Image, data }),
+                  headers,
+                });
+                const id = await response.text();
+                setIsLoading(false);
 
-              const headers = new Headers();
-              headers.append('Content-Type', 'text/json');
+                window.location.href = '/from/' + id;
+              } catch {
+                window.location.href = '/error';
+              }
 
-              const response = await fetch('/new', {
-                method: 'POST',
-                body: JSON.stringify({ img: base64Image, data }),
-                headers,
-              });
-              const id = await response.text();
-              setIsLoading(false);
-
-              window.location.href = '/from/' + id;
             }}
           >
             {isLoading ? '處理中' : '送出'}
