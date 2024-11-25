@@ -5,10 +5,13 @@ import path from "path";
 
 import react from '@astrojs/react';
 
+import vercel from '@astrojs/vercel/serverless';
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
   integrations: [react()],
+
   vite: {
     resolve: {
       alias: {
@@ -16,4 +19,6 @@ export default defineConfig({
       },
     },
   },
+
+  adapter: vercel(),
 });
