@@ -14,16 +14,15 @@ if (response.status >= 400 || response.error || !url) {
 }
 
 const { data } = response.data?.[0];
-const { apologizer, confession } = data;
+const { apologizer, confession, apologizee } = data;
 
-const apologizee = '中華隊';
 const imageSrc = url.data.publicUrl
 
 const desc = `本人${apologizer}在此向${apologizee}道歉，${confession}`;
 ---
 
 <Layout
-  title={`來自${apologizee}的${'中華隊道歉表'}：`}
+  title={`來自${apologizer}的${apologizee}道歉表：`}
   ogDesc={desc}
   ogImage={imageSrc}
 >
