@@ -237,7 +237,7 @@ const Canvas = ({
     );
   };
 
-  const image = new Image(250, 250);
+  const image = new Image(300, 300);
   image.src = data.avatar;
   image.crossOrigin = 'Anonumous';
 
@@ -292,16 +292,16 @@ const Canvas = ({
         <Rect width={width} height={height} x={0} y={0} fill={'white'} />
         <CanvaImage
           image={image}
-          x={pW(15)}
+          x={pW(9)}
           y={pH(6)}
-          height={pW(34)}
-          width={pW(34)}
+          height={pW(38)}
+          width={pW(38)}
         />
-        <Text text={'中華隊道歉表'} x={pW(60)} y={pH(16)} fontSize={ch(1.5)} />
+        <Text text={`${data.apologizee}道歉表`} x={pW(54)} y={pH(16)} fontSize={ch(1.5)} />
         <Paragraph
           x={pW(9)}
           y={pH(36)}
-        >{`道歉人：${data.apologist}`}</Paragraph>
+        >{`道歉人：${data.apologizer}`}</Paragraph>
         <Paragraph x={pW(54)} y={pH(36)}>{`日期：${data.date}`}</Paragraph>
         <Paragraph x={pW(9)} y={pH(44)}>{`道歉原因：`}</Paragraph>
         <Reasons x={9} y={48} />
@@ -309,8 +309,8 @@ const Canvas = ({
         <Confession
           centerX={50}
           centerY={80}
-          apologizee={data.apologist}
-          apologizer="中華隊"
+          apologizee={data.apologizer}
+          apologizer={data.apologizee}
           confession={data.confession}
         />
       </Layer>

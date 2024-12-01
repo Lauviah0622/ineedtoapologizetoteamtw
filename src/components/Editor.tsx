@@ -1,5 +1,11 @@
-
-import { type TReasonItem, type Handler, type Reason, type Apology } from './New';
+import { useRef } from 'react';
+import {
+  type TReasonItem,
+  type Handler,
+  type Reason,
+  type Apology,
+} from './New';
+import { APOLOGIZEES } from '../apology';
 
 const EditableReasonItem = ({
   checked,
@@ -23,6 +29,26 @@ const EditableReasonItem = ({
   );
 };
 
+const Upload = ({ onUpload }: { onUpload: (dataUrl: string) => void }) => {
+  return (
+    <div>
+      <input
+        type="file"
+        id="file"
+        onChange={(e) => {
+          if (!e.target.files?.[0]) {
+            return;
+          }
+
+          const url = URL.createObjectURL(e.target.files?.[0]);
+
+          onUpload(url);
+        }}
+      />
+      <label htmlFor="file">上傳圖片</label>
+    </div>
+  );
+};
 
 const Editor = ({
   setData,
@@ -31,22 +57,86 @@ const Editor = ({
   data: Apology;
   setData: React.Dispatch<React.SetStateAction<Apology>>;
 }) => {
+  const ref = useRef(data.apologizee);
+
   return (
     <div className="form">
       <div className="avatar">
         <img src={data.avatar} alt="tw-baseball" />
+        <div>
+          <Upload
+            onUpload={(url) => {
+              const prevUrl = data.avatar;
+              setData((d) => ({
+                ...d,
+                avatar: url,
+              }));
+
+              if (prevUrl.match(/^blob/)) {
+                URL.revokeObjectURL(prevUrl);
+              }
+
+              console.log(url);
+            }}
+          />
+          <select
+            onChange={(e) => {
+              const key = e.target.value;
+              const { img, title } = APOLOGIZEES[key];
+
+              ref.current = title;
+
+              setData((d) => ({
+                ...d,
+                avatar: img,
+                apologizee: title,
+              }));
+            }}
+          >
+            {Object.entries(APOLOGIZEES).map(([key, { img, title }]) => (
+              <option value={key}>{title}</option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div className="header">中華隊道歉表</div>
-      <div className="apologist">
+      <div className="header">
+        <span
+          role="textbox"
+          contentEditable="plaintext-only"
+          onInput={(e: any) => {
+            const apologizee = e.target.innerText;
+
+            setData((d) => ({
+              ...d,
+              apologizee,
+            }));
+          }}
+          onKeyDown={(e) => {
+            const isValidKeyCode = (code: number) => {
+              return [37, 38, 39, 40, 46, 8, 36, 35].includes(code);
+            };
+            if (
+              (e.target as HTMLSpanElement).innerText.length > 16 &&
+              !isValidKeyCode(e.keyCode)
+            ) {
+              e.preventDefault();
+            }
+          }}
+        >
+          {ref.current}
+        </span>
+        <span>道歉表</span>
+      </div>
+      <div className="apologizee">
         <span>道歉人：</span>
         <input
           type="text"
-          value={data.apologist}
+          value={data.apologizer}
           maxLength={16}
           onChange={(e) => {
             setData((d) => ({
               ...d,
-              apologist: e.target.value,
+              apologizer: e.target.value,
             }));
           }}
         />
@@ -122,9 +212,9 @@ const Editor = ({
       <div className="apology">
         <p>
           本人
-          <span className="field">{data.apologist}</span>
+          <span className="field">{data.apologizer}</span>
           在此向
-          <span className="surround-space">中華隊</span>道歉
+          <span className="surround-space">{data.apologizee}</span>道歉
         </p>
         <textarea
           rows={2}

@@ -5,12 +5,12 @@ import {
   type ComponentProps,
   type ReactNode,
 } from 'react';
-import { type Apology, createDefaultApology } from '@/utils/apology';
+import { type Apology, createDefaultApology } from '@/apology';
 import { toJpeg } from 'html-to-image';
 import Editor from './Editor';
 import Render from './Render';
 import { Stage, Layer, Rect, Text } from 'react-konva';
-import { createApology, uploadImage } from "../db";
+import { createApology, uploadImage } from '../db';
 
 export type Reason = Apology['reasons'][number];
 
@@ -55,8 +55,8 @@ const EditableReasonItem = ({
 const New = () => {
   const [isPreview, setIsPreview] = useState(false);
   const [status, setStatus] = useState<0 | 1 | 2>(0);
-  const isIdle = status === 0
-  const isLoading = status === 1
+  const isIdle = status === 0;
+  const isLoading = status === 1;
   const isFetched = status === 2;
 
   const canvasRef = useRef<any>(null);

@@ -14,12 +14,21 @@ if (response.status >= 400 || response.error || !url) {
 }
 
 const { data } = response.data?.[0];
-const { apologist } = data;
+const { apologizer, confession } = data;
+
+const apologizee = '中華隊';
+const imageSrc = url.data.publicUrl
+
+const desc = `本人${apologizer}在此向${apologizee}道歉，${confession}`;
 ---
 
-<Layout title={`來自${apologist}的道歉：`}>
+<Layout
+  title={`來自${apologizee}的${'中華隊道歉表'}：`}
+  ogDesc={desc}
+  ogImage={imageSrc}
+>
   <main>
-    <img src={url.data.publicUrl} alt="apology" />
+    <img src={imageSrc} alt="apology" />
   </main>
   <div class="actions">
     <button onclick="location.href = '/'">再填一張</button>
@@ -37,7 +46,7 @@ const { apologist } = data;
       width: 100%;
       position: fixed;
       top: 50%;
-      transform: translateY(-50%)
+      transform: translateY(-50%);
     }
   }
 

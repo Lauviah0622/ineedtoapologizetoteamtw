@@ -79,8 +79,6 @@ export const getLines = (
   const lines = [];
 
   for (const [from, to] of spans) {
-    console.log({ from, to });
-
     let start = from;
     let pStartX: number;
     let pStartY: number;
