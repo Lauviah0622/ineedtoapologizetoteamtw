@@ -8,12 +8,15 @@ const { id } = Astro.params;
 const response = await getApology(id as string);
 
 const url = await getImageUrl(`${id}.jpg`);
+console.log(response.data);
 
 if (response.status >= 400 || response.error || !url) {
   return Astro.redirect('/404');
 }
 
 const { data } = response.data?.[0];
+
+
 const { apologizer, confession, apologizee } = data;
 
 const imageSrc = url.data.publicUrl
@@ -29,7 +32,7 @@ const desc = `本人${apologizer}在此向${apologizee}道歉，${confession}`;
   <main>
     <img src={imageSrc} alt="apology" />
   </main>
-  <div class="actions">
+  <div class="submit">
     <button onclick="location.href = '/'">再填一張</button>
   </div>
 </Layout>
