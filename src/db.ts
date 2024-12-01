@@ -6,6 +6,7 @@ console.log({ supabaseUrl, supabaseKey });
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// todo 這個應該藏在 API 裡面
 const createApology = (data: string) => {
   return supabase.from('apologies').upsert({ data }).select('id');
 };
@@ -14,6 +15,8 @@ const getApology = (id: string) => {
   return supabase.from('apologies').select('data').eq('id', id);
 };
 
+
+// todo 這個應該藏在 API 裡面
 const uploadImage = (file: Blob, filename: string) => {
   return supabase.storage.from('images').upload(`/public/${filename}`, file, {
     contentType: 'image/jpeg',

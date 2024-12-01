@@ -21,8 +21,6 @@ export const getArrangedTexts = (
     // height: number,
   }
 ) => {
-  console.log('config', config);
-
   const root = Yoga.Node.create();
   root.setFlexDirection(FlexDirection.Row);
   root.setWidth(config.width);
@@ -43,7 +41,7 @@ export const getArrangedTexts = (
     children.push(child);
   }
 
-  root.calculateLayout(config.width, config.height, Direction.LTR);
+  root.calculateLayout(config.width, undefined, Direction.LTR);
 
   return children.map((child) => {
     return {

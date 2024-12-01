@@ -18,8 +18,10 @@ const { apologist } = data;
 ---
 
 <Layout title={`來自${apologist}的道歉：`}>
-  <img src={url.data.publicUrl} alt="apology" />
-  <div class="submit">
+  <main>
+    <img src={url.data.publicUrl} alt="apology" />
+  </main>
+  <div class="actions">
     <button onclick="location.href = '/'">再填一張</button>
   </div>
 </Layout>

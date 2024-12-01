@@ -1,14 +1,11 @@
 import type { APIRoute } from 'astro';
-import { createApology } from '@/db';
+import { createApology, uploadImage } from '@/db';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const json = await request.json();
 
-    const { status, data = [{ id: undefined }] } = await createApology(
-      json.data,
-      json.img
-    );
+    const { status, data = [{ id: undefined }] } = await createApology(json);
 
     const id = data?.[0]?.id;
 

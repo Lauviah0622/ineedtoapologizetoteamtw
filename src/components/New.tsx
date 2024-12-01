@@ -54,7 +54,11 @@ const EditableReasonItem = ({
 
 const New = () => {
   const [isPreview, setIsPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<0 | 1 | 2>(0);
+  const isIdle = status === 0
+  const isLoading = status === 1
+  const isFetched = status === 2;
+
   const canvasRef = useRef<any>(null);
   const [data, setData] = useState(createDefaultApology);
 
@@ -69,28 +73,44 @@ const New = () => {
         <Editor data={data} setData={setData} />
       </main>
       <div className="actions">
-        <button
-          onClick={() => {
-            setIsPreview((s) => !s);
-          }}
-        >
-          {isPreview ? '返回' : '預覽'}
-        </button>
+        {isIdle && (
+          <button
+            onClick={() => {
+              setIsPreview((s) => !s);
+            }}
+          >
+            {isPreview ? '返回' : '預覽'}
+          </button>
+        )}
         {isPreview && (
           <button
+            disabled={!isIdle}
             onClick={async () => {
               try {
+                setStatus(1);
                 const blob = await canvasRef.current.getBlob();
-                
-                const res = await createApology(JSON.stringify(data));
 
-                const id = res.data?.[0].id;
+                const res = await fetch('/new', {
+                  method: 'POST',
+                  body: JSON.stringify(data),
+                });
 
-                const uploadRes = await uploadImage(blob, `${id}.jpg`);
+                const id = await res.text();
 
-                // TODO redirect to page
+                await fetch('/image/' + id, {
+                  method: 'POST',
+                  body: blob,
+                  headers: {
+                    'Content-Type': 'image/jpeg',
+                  },
+                });
 
+                setStatus(2);
 
+                // wait for a while, I'm just a free tier user 🥲
+                await Promise.resolve((res: any) => {
+                  setTimeout(res, 1000);
+                });
 
                 window.location.href = '/from/' + id;
               } catch {
@@ -98,15 +118,15 @@ const New = () => {
               }
             }}
           >
-            送出
+            {status ? '讓子彈飛一會兒' : '送出'}
           </button>
         )}
-        {isPreview && (
+        {isPreview && isIdle && (
           <button
             onClick={async () => {
               const blob = await canvasRef.current.getBlob();
-              if (!blob) return; 
-              
+              if (!blob) return;
+
               const url = URL.createObjectURL(blob);
 
               const link = document.createElement('a');
