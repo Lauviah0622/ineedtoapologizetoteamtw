@@ -7,15 +7,21 @@ import {
 } from 'react';
 import { type Apology, createDefaultApology } from '@/utils/apology';
 import { toJpeg } from 'html-to-image';
+import Editor from './Editor';
+import Render from './Render';
+import { Stage, Layer, Rect, Text } from 'react-konva';
+import { createApology, uploadImage } from "../db";
 
-type Reason = Apology['reasons'][number];
+export type Reason = Apology['reasons'][number];
 
-type TReasonItem = {
+export { type Apology };
+
+export type TReasonItem = {
   checked: Reason[1];
   text: Reason[0];
 };
 
-type Handler<TValue> = (value: TValue) => void;
+export type Handler<TValue> = (value: TValue) => void;
 
 const DisplayText = (props: ComponentProps<'span'>) => {
   return <span {...props} />;
@@ -46,200 +52,72 @@ const EditableReasonItem = ({
   );
 };
 
-const Editor = () => {
+const New = () => {
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const canvasRef = useRef<any>(null);
   const [data, setData] = useState(createDefaultApology);
-  const ref = useRef<HTMLDivElement>(null);
 
-  const EditorComponent = useCallback(
-    ({ preview, editing }: { preview: ReactNode; editing: ReactNode }) =>
-      isPreview ? preview : editing,
-    [isPreview]
-  );
+  console.log(canvasRef);
 
   return (
     <>
-      <div className="form" ref={ref}>
-        <div className="avatar">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/en/0/03/Chinese_Taipei_national_baseball_team.png"
-            alt="tw-baseball"
-          />
-        </div>
-        <div className="header">中華隊道歉表</div>
-        <div className="apologist">
-          <span>道歉人：</span>
-          <EditorComponent
-            preview={<DisplayText children={data.apologist} />}
-            editing={
-              <input
-                type="text"
-                value={data.apologist}
-                onChange={(e) => {
-                  setData((d) => ({
-                    ...d,
-                    apologist: e.target.value,
-                  }));
-                }}
-              />
-            }
-          />
-        </div>
-        <div className="date">
-          日期：
-          <EditorComponent
-            preview={<DisplayText children={data.date} />}
-            editing={
-              <input
-                type="date"
-                value={data.date}
-                onChange={(e) => {
-                  setData((d) => ({
-                    ...d,
-                    date: e.target.value,
-                  }));
-                }}
-              />
-            }
-          />
-        </div>
-        <div className="reason">
-          <div>道歉原因：</div>
-          <ul className={isPreview ? 'items' : 'items editing'}>
-            {data.reasons.map(([text, checked], index) => {
-              if (isPreview) {
-                return <ReasonItem key={index} text={text} checked={checked} />;
-              }
-              // 這裡可以選擇要用 form，還是直接用 li
-
-              const onCheckedChange = () => {
-                setData((d) => {
-                  const nextReason: Reason = [...d.reasons[index]];
-
-                  nextReason[1] = !nextReason[1];
-
-                  console.log('nextReason', nextReason);
-
-                  const nextReasons = [...d.reasons];
-
-                  nextReasons[index] = nextReason;
-
-                  return { ...d, reasons: nextReasons };
-                });
-              };
-
-              const onTextChange = (value: string) => {
-                setData((d) => {
-                  const nextReason: Reason = [...d.reasons[index]];
-                  nextReason[0] = value;
-
-                  const nextReasons = [...d.reasons];
-
-                  nextReasons[index] = nextReason;
-
-                  return { ...d, reasons: nextReasons };
-                });
-              };
-
-              return (
-                <EditableReasonItem
-                  key={index}
-                  {...{ text, checked, onTextChange, onCheckedChange }}
-                />
-              );
-            })}
-          </ul>
-          <div className="other">
-            <EditorComponent
-              preview={
-                data.otherReason && (
-                  <DisplayText
-                    className="checked"
-                    children={data.otherReason}
-                  />
-                )
-              }
-              editing={
-                <span className={data.otherReason ? 'checked' : ''}>
-                  <input
-                    type="text"
-                    value={data.otherReason}
-                    onChange={(e) => {
-                      setData((d) => ({
-                        ...d,
-                        otherReason: e.target.value,
-                      }));
-                    }}
-                  />
-                </span>
-              }
-            />
-          </div>
-        </div>
-        <div className="apology">
-          <p>
-            本人
-            <span className="field">{data.apologist}</span>
-            在此向
-            <span className="surround-space">中華隊</span>道歉
-          </p>
-          <p>
-            <EditorComponent
-              preview={<DisplayText children={data.confession} />}
-              editing={
-                <textarea
-                  rows={2}
-                  value={data.confession}
-                  onChange={(e) => {
-                    setData((d) => ({
-                      ...d,
-                      confession: e.target.value,
-                    }));
-                  }}
-                />
-              }
-            />
-          </p>
-        </div>
-      </div>
-      <div className="submit">
+      <main style={{ visibility: isPreview ? 'visible' : 'hidden' }}>
+        <Render data={data} canvasRef={canvasRef} />
+      </main>
+      <main style={{ visibility: isPreview ? 'hidden' : 'visible' }}>
+        <Editor data={data} setData={setData} />
+      </main>
+      <div className="actions">
         <button
           onClick={() => {
-            setIsPreview(!isPreview);
+            setIsPreview((s) => !s);
           }}
         >
-          {isPreview ? '編輯' : '預覽'}
+          {isPreview ? '返回' : '預覽'}
         </button>
         {isPreview && (
           <button
-            disabled={isLoading}
             onClick={async () => {
               try {
-                setIsLoading(true)
-                if (!ref.current) {
-                  return;
-                }
-                const base64Img = await toJpeg(ref.current, { quality: 0.5 });
+                const blob = await canvasRef.current.getBlob();
+                
+                const res = await createApology(JSON.stringify(data));
 
-                const headers = new Headers();
-                headers.append('Content-Type', 'text/json');
-  
-                const response = await fetch('/new', {
-                  method: 'POST',
-                  body: JSON.stringify({ img: base64Img, data }),
-                  headers,
-                });
-                const id = await response.text();
+                const id = res.data?.[0].id;
+
+                const uploadRes = await uploadImage(blob, `${id}.jpg`);
+
+                // TODO redirect to page
+
+
 
                 window.location.href = '/from/' + id;
               } catch {
                 window.location.href = '/error';
               }
-
             }}
           >
-            {isLoading ? '處理中' : '送出'}
+            送出
+          </button>
+        )}
+        {isPreview && (
+          <button
+            onClick={async () => {
+              const blob = await canvasRef.current.getBlob();
+              if (!blob) return; 
+              
+              const url = URL.createObjectURL(blob);
+
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `x.jpeg`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            下載
           </button>
         )}
       </div>
@@ -247,4 +125,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default New;

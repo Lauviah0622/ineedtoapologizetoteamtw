@@ -9,13 +9,21 @@ import vercel from '@astrojs/vercel/serverless';
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
+  output: 'server',
   integrations: [react()],
 
   vite: {
     resolve: {
       alias: {
         '@': path.resolve('./src'),
+      },
+    },
+    build: {
+      target: 'esnext',
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
       },
     },
   },

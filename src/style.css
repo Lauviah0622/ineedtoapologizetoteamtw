@@ -6,6 +6,11 @@ input, textarea {
 input[type="text"] {
   width: 100%;
   flex-shrink: 1;
+
+  @media (width <=768px) {
+    /* max-width: 25ch; */
+    /* width: unset; */
+  }
 }
 
 input[type="checkbox"] {
@@ -13,13 +18,14 @@ input[type="checkbox"] {
 }
 
 span {
-  white-space: pre;
+  white-space: break-spaces;
 }
 
 .form {
+  box-sizing: border-box;
   position: relative;
   display: grid;
-  gap: 2em 1em;
+  gap: 0em 1em;
   box-sizing: border-box;
   padding: 3em;
   height: 100%;
@@ -33,6 +39,20 @@ span {
     'apologist date'
     'reason reason'
     'apology apology';
+
+  @media (width <=768px) {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    align-items: stretch;
+    width: 100%;
+
+    gap: 1em;
+
+    & > * {
+      width: 100%;
+    }
+  }
 }
 
 .apologist {
@@ -49,8 +69,18 @@ span {
   grid-area: avatar;
 
   & img {
+    display: block;
     width: 100%;
     aspect-ratio: 1 / 1;
+  }
+
+  @media (width <=768px) {
+    & img {
+      width: 300px;
+      max-width: 80%;
+      aspect-ratio: 1 / 1;
+      margin: auto;
+    }
   }
 }
 
@@ -60,6 +90,11 @@ span {
   align-items: center;
   justify-content: center;
   font-size: 1.5em;
+
+  @media (width <=768px) {
+    justify-content: center;
+
+  }
 }
 
 .reason {
@@ -75,6 +110,10 @@ span {
   padding: 0;
   list-style: none;
   margin-block: 0.5em;
+
+  @media (width <=768px) {
+    columns: 1;
+  }
 }
 
 
@@ -120,18 +159,25 @@ span {
   justify-content: end; */
 
   height: 7ch;
-
-
   grid-area: apology;
   text-align: center;
 
   & p {
     margin-block: .5em;
+    width: 100%;
   }
 
   & textarea {
     width: 100%;
     height: 100%;
+  }
+
+  @media (width <=768px) {
+    height: unset;
+
+    & textarea {
+      height: 5em;
+    }
   }
 }
 
@@ -155,17 +201,18 @@ span {
 
 }
 
-.submit {
-  position: absolute;
-  bottom: 0em;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  padding: 1em;
-  gap: 1ch;
 
-  & > button {
-    padding: .2em .5em;
-    font-size: 1em;
+.preview {
+  height: 100%;
+  width: 100%;
+
+  & .konvajs-content {
+    height: 100%;
+    width: 100%;
+  }
+
+  @media (width <=768px) {
+    width: 100vw;
+    aspect-ratio: 2 /3;
   }
 }

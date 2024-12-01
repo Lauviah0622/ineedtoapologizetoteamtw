@@ -14,30 +14,36 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta property="og:site_name" content="填寫中華隊道歉表">
-    <meta property="og:title" content="填寫中華隊道歉表">
+    <meta property="og:site_name" content="填寫中華隊道歉表" />
+    <meta property="og:title" content="填寫中華隊道歉表" />
     <!-- <meta property="og:url" content="http://{{ site.url }}{{ site.baseurl }}{{ page.url }}"> -->
-    <meta property="og:description" content="對不起中華隊，我一開始不看好你">
-    <meta property="og:image" content="/sorry.jpg" id="og-image">
+    <meta property="og:description" content="對不起中華隊，我一開始不看好你" />
+    <meta property="og:image" content="/sorry.jpg" id="og-image" />
 
     <title>{title}</title>
   </head>
   <body>
     <div class="base">
-      <main><slot/></main>
+      <slot />
     </div>
   </body>
 </html>
 <style is:global>
   :root {
   }
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
   html {
     font-family: system-ui, sans-serif;
     background: #eeeeee;
     min-height: 100vh;
-  }
-
-  body {
+    @media (width <= 768px) {
+      width: 100vw;
+    }
   }
 
   .base {
@@ -45,18 +51,53 @@ const { title } = Astro.props;
     display: grid;
     align-content: center;
     justify-content: center;
+    box-sizing: border-box;
+
+    @media (width <= 768px) {
+      padding: 0.5rem;
+      align-content: unset;
+      width: 100vw;
+    }
   }
 
   main {
+    min-width: 1px;
     margin: auto;
-    padding: 1rem;
+    padding: 0;
     max-width: calc(100% - 2rem);
     aspect-ratio: 1 / 1.414;
     background-color: white;
     font-size: 20px;
     line-height: 1.6;
-		box-shadow: 4px 4px 16px -3px rgba(0,0,0,0.1);
+    box-shadow: 4px 4px 16px -3px rgba(0, 0, 0, 0.1);
     /* border: 1px solid black; */
     height: 90vh;
+
+    grid-column: 1;
+    grid-row: 1;
+
+    @media (width <= 768px) {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: calc(100% - 1rem);
+      max-width: 500px;
+      aspect-ratio: unset;
+      /* padding: 5px; */
+      height: unset;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 2ch;
+    padding: 0.5em;
+
+    & button {
+      padding: 0.3em 0.8em;
+      font-size: 1em;
+    }
   }
 </style>

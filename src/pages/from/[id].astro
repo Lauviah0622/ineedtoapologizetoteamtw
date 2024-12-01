@@ -1,22 +1,24 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getApology } from '@/db';
-import '@/form.css';
+import { getApology, getImageUrl } from '@/db';
+import '@/style.css';
 
 const { id } = Astro.params;
 
 const response = await getApology(id as string);
 
-if (response.status >= 400 || response.error) {
+const url = await getImageUrl(`${id}.jpg`);
+
+if (response.status >= 400 || response.error || !url) {
   return Astro.redirect('/404');
 }
 
-const { data, img } = response.data?.[0];
+const { data } = response.data?.[0];
 const { apologist } = data;
 ---
 
 <Layout title={`來自${apologist}的道歉：`}>
-  <img src={img} alt="apology" />
+  <img src={url.data.publicUrl} alt="apology" />
   <div class="submit">
     <button onclick="location.href = '/'">再填一張</button>
   </div>
@@ -25,5 +27,30 @@ const { apologist } = data;
 <style>
   img {
     height: 100%;
+  }
+
+  @media (width <=768px) {
+    img {
+      height: auto;
+      width: 100%;
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%)
+    }
+  }
+
+  .submit {
+    position: absolute;
+    bottom: 0em;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    padding: 1em;
+    gap: 1ch;
+
+    & > button {
+      padding: 0.2em 0.5em;
+      font-size: 1em;
+    }
   }
 </style>

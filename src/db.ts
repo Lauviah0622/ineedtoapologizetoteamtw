@@ -1,20 +1,29 @@
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = import.meta.env.URL
-const supabaseKey = import.meta.env.KEY
+import { createClient } from '@supabase/supabase-js';
+const supabaseUrl = import.meta.env.PUBLIC_URL;
+const supabaseKey = import.meta.env.PUBLIC_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+console.log({ supabaseUrl, supabaseKey });
 
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const createApology = (data: string, img: string) => {
-  return supabase.from('apologies').upsert({ data, img }).select("id");
-}
+const createApology = (data: string) => {
+  return supabase.from('apologies').upsert({ data }).select('id');
+};
 
 const getApology = (id: string) => {
-  return supabase.from('apologies').select('img, data').eq('id', id);
-}
+  return supabase.from('apologies').select('data').eq('id', id);
+};
 
-export { createApology, getApology };
+const uploadImage = (file: Blob, filename: string) => {
+  return supabase.storage.from('images').upload(`/public/${filename}`, file, {
+    contentType: 'image/jpeg',
+    upsert: true,
+    cacheControl: 'max-age=31536000',
+  });
+};
 
+const getImageUrl = (filename: string) => {
+  return supabase.storage.from('images').getPublicUrl(`/public/${filename}`);
+};
 
-
-
+export { createApology, getApology, uploadImage, getImageUrl };

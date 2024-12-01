@@ -1,5 +1,7 @@
-import { getDateString } from "./misc";
 
+export const getDateString = (d: Date) => {
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+};
 
 type Reason = [string, boolean];
 
@@ -11,6 +13,7 @@ export type Apology = {
   reasons: Reason[];
   otherReason: string;
   confession: string;
+  avatar: string
 };
 
 
@@ -23,6 +26,8 @@ export const createDefaultApology = (): Apology => {
     }),
     otherReason: '',
     confession: '',
+    avatar:
+      'https://upload.wikimedia.org/wikipedia/en/0/03/Chinese_Taipei_national_baseball_team.png',
   };
 };
 
