@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createApology, uploadImage } from '@/db';
+import { createApology } from '@/db';
 
 export const POST: APIRoute = async ({ request }) => {
   try {

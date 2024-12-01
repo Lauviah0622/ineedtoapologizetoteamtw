@@ -102,7 +102,7 @@ const Editor = ({
       <div className="header">
         <span
           role="textbox"
-          contentEditable="plaintext-only"
+          contentEditable
           onInput={(e: any) => {
             const apologizee = e.target.innerText;
 
